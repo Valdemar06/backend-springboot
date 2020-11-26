@@ -2,11 +2,15 @@ package com.valdemar.backendspringboot.controller;
 
 import com.valdemar.backendspringboot.entity.Priority;
 import com.valdemar.backendspringboot.repository.PriorityRepository;
+import com.valdemar.backendspringboot.search.CategorySearchValues;
+import com.valdemar.backendspringboot.search.PrioritySearchValues;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/priority")
@@ -18,9 +22,9 @@ public class PriorityController {
         this.priorityRepository = priorityRepository;
     }
 
-    @GetMapping("/test")
-    public List<Priority> test(){
-        return priorityRepository.findAll();
+    @GetMapping("/all")
+    public List<Priority> findAll(){
+        return priorityRepository.findAllByOrderByIdAsc();
     }
 
     @PostMapping("/add")
@@ -48,5 +52,33 @@ public class PriorityController {
             return new ResponseEntity("missed param: COLOR", HttpStatus.NOT_ACCEPTABLE);
         }
         return ResponseEntity.ok(priorityRepository.save(priority));
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Priority> findById(@PathVariable Long id){
+        Priority priority;
+        try {
+            priority = priorityRepository.findById(id).get();
+        }catch (NoSuchElementException e){
+            e.printStackTrace();
+            return new ResponseEntity("id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+        }
+        return ResponseEntity.ok(priority);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Priority> deleteById(@PathVariable Long id){
+        try {
+            priorityRepository.deleteById(id);
+        }catch (EmptyResultDataAccessException e){
+            e.printStackTrace();
+            return new ResponseEntity("id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+        }
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValues prioritySearchValues){
+        return ResponseEntity.ok(priorityRepository.findByTitle(prioritySearchValues.getTitle()));
     }
 }
