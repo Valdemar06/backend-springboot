@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity
 @Table(name = "task", schema = "tasklist")
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class Task {
     private Long id;

@@ -1,8 +1,8 @@
 package com.valdemar.backendspringboot.controller;
 
+import com.valdemar.backendspringboot.util.MyLogger;
 import com.valdemar.backendspringboot.entity.Priority;
 import com.valdemar.backendspringboot.repository.PriorityRepository;
-import com.valdemar.backendspringboot.search.CategorySearchValues;
 import com.valdemar.backendspringboot.search.PrioritySearchValues;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -17,23 +17,26 @@ import java.util.NoSuchElementException;
 public class PriorityController {
 
     private final PriorityRepository priorityRepository;
+    private final MyLogger myLogger = new MyLogger();
 
     public PriorityController(PriorityRepository priorityRepository) {
         this.priorityRepository = priorityRepository;
     }
 
     @GetMapping("/all")
-    public List<Priority> findAll(){
+    public List<Priority> findAll() {
+        myLogger.showClassAndMethod("Priority Controller: method:findAll() -----------------------------------------");
         return priorityRepository.findAllByOrderByIdAsc();
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Priority> add(@RequestBody Priority priority){
+    public ResponseEntity<Priority> add(@RequestBody Priority priority) {
+        myLogger.showClassAndMethod("Priority Controller: method:add() ---------------------------------------------");
         //id automatically created in the database
-        if (priority.getId()!=null && priority.getId()!=0){
+        if (priority.getId() != null && priority.getId() != 0) {
             return new ResponseEntity("redundant param: id MUST be null", HttpStatus.NOT_ACCEPTABLE);
         }
-        if(priority.getTitle() == null || priority.getTitle().trim().length() == 0){
+        if (priority.getTitle() == null || priority.getTitle().trim().length() == 0) {
             return new ResponseEntity("missed param: TITLE", HttpStatus.NOT_ACCEPTABLE);
         }
 
@@ -41,25 +44,28 @@ public class PriorityController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Priority> update(@RequestBody Priority priority){
-        if(priority.getId() == null || priority.getId()==0){
-            return new ResponseEntity("missed param: ID",HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<Priority> update(@RequestBody Priority priority) {
+        myLogger.showClassAndMethod("Priority Controller: method:update() ------------------------------------------");
+        if (priority.getId() == null || priority.getId() == 0) {
+            return new ResponseEntity("missed param: ID", HttpStatus.NOT_ACCEPTABLE);
         }
-        if (priority.getTitle() == null || priority.getTitle().trim().length() == 0){
-            return new ResponseEntity("missed param: TITLE",HttpStatus.NOT_ACCEPTABLE);
+        if (priority.getTitle() == null || priority.getTitle().trim().length() == 0) {
+            return new ResponseEntity("missed param: TITLE", HttpStatus.NOT_ACCEPTABLE);
         }
-        if (priority.getColor() == null || priority.getColor().trim().length() == 0){
+        if (priority.getColor() == null || priority.getColor().trim().length() == 0) {
             return new ResponseEntity("missed param: COLOR", HttpStatus.NOT_ACCEPTABLE);
         }
-        return ResponseEntity.ok(priorityRepository.save(priority));
+        priorityRepository.save(priority);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<Priority> findById(@PathVariable Long id){
+    public ResponseEntity<Priority> findById(@PathVariable Long id) {
+        myLogger.showClassAndMethod("Priority Controller: method:findById() ----------------------------------------");
         Priority priority;
         try {
             priority = priorityRepository.findById(id).get();
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             e.printStackTrace();
             return new ResponseEntity("id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
         }
@@ -67,10 +73,12 @@ public class PriorityController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Priority> deleteById(@PathVariable Long id){
+    public ResponseEntity<Priority> deleteById(@PathVariable Long id) {
+        myLogger.showClassAndMethod("Priority Controller: method:deleteById() --------------------------------------");
+
         try {
             priorityRepository.deleteById(id);
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
             return new ResponseEntity("id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
         }
@@ -78,7 +86,8 @@ public class PriorityController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValues prioritySearchValues){
+    public ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValues prioritySearchValues) {
+        myLogger.showClassAndMethod("Priority Controller: method:search() ------------------------------------------");
         return ResponseEntity.ok(priorityRepository.findByTitle(prioritySearchValues.getTitle()));
     }
 }

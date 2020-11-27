@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Table(name = "priority", schema = "tasklist")
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class Priority {
     private Long id;
     private String title;

@@ -10,7 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "stat", schema = "tasklist")
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class Stat {
     private Long id;
     private Long completedTotal;

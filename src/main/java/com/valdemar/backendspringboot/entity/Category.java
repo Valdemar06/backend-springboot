@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Table(name = "category", schema = "tasklist")
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class Category {
     private Long id;
     private String title;
