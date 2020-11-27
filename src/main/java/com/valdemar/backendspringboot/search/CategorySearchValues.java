@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CategorySearchValues {
 
+    //Search field
     private String title;
 
 }
